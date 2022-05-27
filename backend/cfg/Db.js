@@ -13,3 +13,17 @@ const connectDb = async () => {
 }
 
 module.exports = connectDb
+
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+
+// const uri = process.env.MONGO_URI
+
+// module.exports = function () {
+//     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+//     client.connect(err => {
+//         const collection = client.db("GoalSetter").collection("devices");
+//         console.log(collection);
+//         // perform actions on the collection object
+//         //client.close();
+//     });
+// }
