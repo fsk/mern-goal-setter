@@ -1,5 +1,7 @@
 const express = require('express');
+const colors = require('colors');
 const dotenv = require('dotenv').config();
+const connectDb = require('./cfg/Db');
 const { errorHandler } = require('./middleware/ErrorMiddleware');
 const port = process.env.PORT || 5000;
 
@@ -15,4 +17,5 @@ app.use(errorHandler);
 
 app.listen(port, () => {
     console.log(`Server started on ${port}`);
+    connectDb();
 })
