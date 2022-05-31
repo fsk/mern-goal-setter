@@ -10,24 +10,18 @@ const User = require('../models/UserModule');
 const registerUser = asyncHandler( async (req, res) => {
     const { name, surname, email, username, password,  } = req.body;
 
-    if(!name || !surname || !email || !username || !password) {
+    // Required Fields
+    if(!(name && surname && email && username && password)) {
         res.status(400);
         throw new Error('Please add all fields');
     }
 
     //Check if user exists
+    const existUser = await User.findOne({ $or: [{ 'email': email }, { 'username': username }] });
 
-    const userExistsEmail = await User.findOne({email});
-    const userExistsUsername = await User.findOne({username});
-
-    if(userExistsEmail) {
+    if (existUser != null) {
         res.status(400);
-        throw new Error('This email already exists');
-    }
-
-    if(userExistsUsername) {
-        res.status(400);
-        throw new Error('This username already exists');
+        throw new Error('Username or email already exist');
     }
 
     //Hash password
@@ -41,13 +35,21 @@ const registerUser = asyncHandler( async (req, res) => {
         email,
         username,
         password: hashedPassword,
-        token: generateToken(user._id)
     })
 
     if(user) {
+        //user.token = generateToken(user._id);
+        console.log("** user : ",user)
         res.status(201).json({
-            message: "User created successfully"
-        })
+            message: "User created successfully",
+            createdUser: {
+                name: user.name,
+                surname: user.surname,
+                email: user.email,
+                username: user.username,
+                token: generateToken(user._id)
+            }
+        }).setHeader('content/type', 'application/json')
     }else {
         res.status(400)
         throw new Error('Invalid User Error')
@@ -91,12 +93,9 @@ const getMe = asyncHandler( async (req, res) => {
 
 
 //Generate JWT
-
-// const generateToken = (id) => {
-//     return jwt.sign({ id }, process.env.JWT_SECRET, {
-//         expiresIn: '30d'
-//     })
-// }
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+}
 
 
 
